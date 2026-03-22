@@ -76,7 +76,7 @@ async def fetch_token_parallel(uid, password):
     # APIs to try (add more if needed)
     apis = [
         f"https://flash-jwt.vercel.app/token?uid={uid}&password={password}",
-        f"https://flash-adding-friend.vercel.app/token?uid={uid}&password={password}&key=Flash",
+        f"https://fast-jwt-token-api.vercel.app/token?uid={uid}&password={password}",
     ]
     
     async with aiohttp.ClientSession() as session:
@@ -171,7 +171,7 @@ async def visit(session, url, token, uid, data):
         return False, None
 
 async def send_100_visits(accounts, target_uid, server_name):
-    """Send 100 visits using tokens from parallel API"""
+    """Send 1000 visits using tokens from parallel API"""
     url = get_url(server_name)
     connector = aiohttp.TCPConnector(limit=0)
     total_success = 0
@@ -195,14 +195,14 @@ async def send_100_visits(accounts, target_uid, server_name):
         return 0, 0, None
     
     print(f"✅ Got {len(tokens)} valid tokens")
-    print(f"🎯 Target: 100 visits")
+    print(f"🎯 Target: 1000 visits")
     
     async with aiohttp.ClientSession(connector=connector) as session:
         encrypted = encrypt_api("08" + Encrypt_ID(str(target_uid)) + "1801")
         data = bytes.fromhex(encrypted)
         
-        while total_success < 100:
-            batch_size = min(100 - total_success, 100)
+        while total_success < 1000:
+            batch_size = min(1000 - total_success, 1000)
             tasks = []
             
             for i in range(batch_size):
@@ -226,7 +226,7 @@ async def send_100_visits(accounts, target_uid, server_name):
             total_success += batch_success
             total_sent += batch_size
             
-            print(f"📊 Sent: {batch_size} | Success: {batch_success} | Total: {total_success}/100")
+            print(f"📊 Sent: {batch_size} | Success: {batch_success} | Total: {total_success}/1000")
             await asyncio.sleep(0.2)
     
     return total_success, total_sent, player_info
@@ -282,14 +282,14 @@ def auto_refresh_worker():
 
 @app.route('/<string:server>/<int:uid>', methods=['GET'])
 def send_visits(server, uid):
-    """Send 100 visits to UID"""
+    """Send 1000 visits to UID"""
     server = server.upper()
     accounts = load_accounts(server)
     
     if not accounts:
         return jsonify({"error": f"No accounts for {server}"}), 400
     
-    print(f"\n🚀 Sending 100 visits to UID: {uid}")
+    print(f"\n🚀 Sending 1000 visits to UID: {uid}")
     print(f"📁 Using {len(accounts)} accounts")
     
     total_success, total_sent, player_info = asyncio.run(
@@ -298,10 +298,10 @@ def send_visits(server, uid):
     
     response = {
         "success": total_success,
-        "fail": 100 - total_success,
+        "fail": 1000 - total_success,
         "total_sent": total_sent,
         "accounts_used": len(accounts),
-        "target": 100
+        "target": 1000
     }
     
     if player_info:
@@ -354,7 +354,7 @@ if __name__ == "__main__":
     print("⚡ Parallel API calls for instant tokens")
     print("🔄 Auto-refresh every 2 hours")
     print("💾 Token cache enabled")
-    print("🎯 100 visits per request")
+    print("🎯 1000 visits per request")
     print("🌐 http://0.0.0.0:5100")
     print("=" * 50)
     
